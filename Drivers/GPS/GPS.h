@@ -19,6 +19,6 @@ uint8_t location_data[40],done;
 
 /*=================== APIs ========================*/
 extern void GPS_Init();
-extern void Get_Location(float*, float*);
+extern void Get_Location(float*, float*);  //Arguments are the addresses of Latitude and Longitude Variables
 
 #endif /* GPS_H_ */
