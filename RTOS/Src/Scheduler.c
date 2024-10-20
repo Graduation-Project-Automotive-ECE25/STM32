@@ -40,7 +40,7 @@ void BubbleSort(){
 
 	for(uint32_t i = 0; i< n-1; i++){
 		for(uint32_t j = 0; j< n-i-1; j++){
-			if(OS_Control.OS_Tasks[j]->priorrity > OS_Control.OS_Tasks[j+1]->priorrity){
+			if(OS_Control.OS_Tasks[j]->priority > OS_Control.OS_Tasks[j+1]->priority){
 				temp = OS_Control.OS_Tasks[j];
 				OS_Control.OS_Tasks[j] = OS_Control.OS_Tasks[j+1];
 				OS_Control.OS_Tasks[j+1] = temp;
@@ -77,13 +77,13 @@ void update_schedulerTable_and_readyQueue(){
 
 			}
 			// if the current task has higher priority than the next task
-			else if(pTask->priorrity < pNextTask->priorrity){
+			else if(pTask->priority < pNextTask->priority){
 
 				FIFO_enqueue(&Ready_queue, pTask);
 				pTask->task_state = ready;
 				break;
 				// if the current task has same priority as the next task
-			}else if(pTask->priorrity == pNextTask->priorrity){
+			}else if(pTask->priority == pNextTask->priority){
 
 				FIFO_enqueue(&Ready_queue, pTask);
 				pTask->task_state = ready;
@@ -110,7 +110,7 @@ void decide_whatNext(){
 		OS_Control.NextTask->task_state = running;
 
 		//update ready queue (to maintain round robin happening)
-		if(OS_Control.CurrentTask->priorrity == OS_Control.NextTask->priorrity && OS_Control.CurrentTask->task_state != suspended){
+		if(OS_Control.CurrentTask->priority == OS_Control.NextTask->priority && OS_Control.CurrentTask->task_state != suspended){
 			FIFO_enqueue(&Ready_queue,OS_Control.CurrentTask);
 			OS_Control.CurrentTask->task_state = ready;
 
@@ -288,7 +288,7 @@ void create_MainStack(){
 	OS_Control.PSP_Task_locator = OS_Control._E_MSP - 8;
 }
 
-Error_Type createTask(Task_ref* ptask){
+Error_Type MY_RTOS_createTask(Task_ref* ptask){
 
 	Error_Type error = NoError;
 
@@ -327,11 +327,11 @@ Error_Type MY_RTOS_Init(){
 
 	/* configure idle task */
 	strcpy(IDLE_Task.TaskName, "Idle Task");
-	IDLE_Task.priorrity = 255;
+	IDLE_Task.priority = 255;
 	IDLE_Task.p_TaskEntry = MY_RTOS_Idle_Task;
 	IDLE_Task.stack_size = 300;
 
-	error += createTask(&IDLE_Task);
+	error += MY_RTOS_createTask(&IDLE_Task);
 
 	return error;
 }
@@ -342,7 +342,7 @@ void MY_RTOS_Start(){
 
 	//Set Default task = idle task
 	OS_Control.CurrentTask = &IDLE_Task;
-	activateTask(&IDLE_Task);
+	MY_RTOS_activateTask(&IDLE_Task);
 	//start ticker -1ms-
 	SysTick_Config(8000);
 	//Set PSP to idle task current PSP
@@ -355,21 +355,21 @@ void MY_RTOS_Start(){
 	OS_Control.CurrentTask->p_TaskEntry();
 }
 
-void activateTask(Task_ref* ptask){
+void MY_RTOS_activateTask(Task_ref* ptask){
 
 	ptask->task_state = waiting;
 
 	OS_SVC_Set(Activate_Task);
 }
 
-void terminateTask(Task_ref* ptask){
+void MY_RTOS_terminateTask(Task_ref* ptask){
 
 	ptask->task_state = suspended;
 
 	OS_SVC_Set(Terminate_Task);
 }
 
-void Task_Wait(uint32_t ticks,Task_ref* ptask){
+void MY_RTOS_Task_Wait(uint32_t ticks,Task_ref* ptask){
 
 	ptask->Waiting_Time.Blocking = enable;
 	ptask->Waiting_Time.Ticks_Count = ticks;
@@ -395,7 +395,7 @@ void Update_TasksWaitingTime(){
 	}
 }
 
-Error_Type AcquireMutex(Mutex_ref* pMutex, Task_ref* pTask){
+Error_Type MY_RTOS_AcquireMutex(Mutex_ref* pMutex, Task_ref* pTask){
 
 	if(pMutex->current_user == NULL){ //Mutex is not taken by any task
 		pMutex->current_user = pTask;
@@ -412,7 +412,7 @@ Error_Type AcquireMutex(Mutex_ref* pMutex, Task_ref* pTask){
 	return NoError;
 }
 
-void ReleaseMutex(Mutex_ref* pMutex){
+void MY_RTOS_ReleaseMutex(Mutex_ref* pMutex){
 
 	if(pMutex->current_user != NULL){
 	pMutex->current_user = pMutex->Next_user;
