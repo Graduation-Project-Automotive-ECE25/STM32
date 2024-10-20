@@ -21,7 +21,7 @@ typedef enum {
 
 typedef struct{
 	uint32_t stack_size;
-	uint8_t priorrity;
+	uint8_t priority;
 	void (*p_TaskEntry)();
 	uint32_t _S_PSP_Task;
 	uint32_t _E_PSP_Task;
@@ -49,11 +49,11 @@ typedef struct{
 /*============ APIs =============*/
 extern Error_Type MY_RTOS_Init();
 extern void MY_RTOS_Start();
-extern Error_Type createTask(Task_ref*);
-extern void activateTask(Task_ref*);
-extern void terminateTask(Task_ref*);
-extern void Task_Wait(uint32_t,Task_ref*);
-extern Error_Type AcquireMutex(Mutex_ref*, Task_ref*);
-extern void ReleaseMutex(Mutex_ref*);
+extern Error_Type MY_RTOS_createTask(Task_ref*);
+extern void MY_RTOS_activateTask(Task_ref*);
+extern void MY_RTOS_terminateTask(Task_ref*);
+extern void MY_RTOS_Task_Wait(uint32_t,Task_ref*);
+extern Error_Type MY_RTOS_AcquireMutex(Mutex_ref*, Task_ref*);
+extern void MY_RTOS_ReleaseMutex(Mutex_ref*);
 
 #endif /* SCHEDULER_H_ */
