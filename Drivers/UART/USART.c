@@ -199,6 +199,8 @@ void MCAL_UASRT_GPIO_Set_Pins(USARTx_REG* USARTx){
 
 	if(USARTx == USART1){
 
+		GPIOx_CLK_EN('A');
+		
 		//TX PA9
 		pincfg.GPIO_PinNumber = GPIO_PIN_9;
 		pincfg.GPIO_MODE = GPIO_MODE_OUTPUT_AF_PP;
@@ -228,6 +230,8 @@ void MCAL_UASRT_GPIO_Set_Pins(USARTx_REG* USARTx){
 
 	else if(USARTx == USART2){
 
+		GPIOx_CLK_EN('A');
+		
 		//TX PA2
 		pincfg.GPIO_PinNumber = GPIO_PIN_2;
 		pincfg.GPIO_MODE = GPIO_MODE_OUTPUT_AF_PP;
@@ -257,6 +261,8 @@ void MCAL_UASRT_GPIO_Set_Pins(USARTx_REG* USARTx){
 
 	else if(USARTx == USART3){
 
+		GPIOx_CLK_EN('B');
+		
 		//TX PB10
 		pincfg.GPIO_PinNumber = GPIO_PIN_10;
 		pincfg.GPIO_MODE = GPIO_MODE_OUTPUT_AF_PP;
