@@ -94,6 +94,16 @@ static uint8_t Get_CRLH_Position(uint16_t PinNumber)
  */
 
 void MCAL_GPIOx_Init (GPIOx_REG* GPIOx, GPIO_PinConfig_t* PinConfig){
+
+	//Enable clock for gpio ports
+
+	if(GPIOx == GPIOA)
+		GPIOx_CLK_EN('A');
+	else if (GPIOx == GPIOB)
+		GPIOx_CLK_EN('B');
+	else if (GPIOx == GPIOC)
+		GPIOx_CLK_EN('C');
+	
 	//Port configuration register low (GPIOx_CRL)  0 >>> 7
 	//Port configuration register high (GPIOx_CRH) 8 >>> 15
 	vuint32_t* config_reg = NULL;
