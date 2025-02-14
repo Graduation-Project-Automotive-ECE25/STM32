@@ -8,6 +8,7 @@
 #include "CortexMx_OS_porting.h"
 
 extern void decide_whatNext();
+extern void Update_TasksWaitingTime();
 
   void HardFault_Handler(){while(1);}
   void MemManage_Handler(){while(1);}
@@ -28,6 +29,9 @@ extern void decide_whatNext();
 
 	  //lower PendSV interrupt priority to equal SysTick interrupt priority
 	  __NVIC_SetPriority(PendSV_IRQn, 15);
+	  __NVIC_SetPriority(SVCall_IRQn, 5);
+	  __NVIC_SetPriority(Interrupt37_IRQn, 2);
+	  __NVIC_SetPriority(Interrupt38_IRQn, 2);
 
   }
 
