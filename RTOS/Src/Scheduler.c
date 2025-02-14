@@ -329,7 +329,7 @@ Error_Type MY_RTOS_Init(){
 	strcpy(IDLE_Task.TaskName, "Idle Task");
 	IDLE_Task.priority = 255;
 	IDLE_Task.p_TaskEntry = MY_RTOS_Idle_Task;
-	IDLE_Task.stack_size = 300;
+	IDLE_Task.stack_size = 128;
 
 	error += MY_RTOS_createTask(&IDLE_Task);
 
