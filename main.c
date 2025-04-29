@@ -13,9 +13,9 @@ void GPS ()
 		float x,y;
 		if(done == 1 ){
 			Get_Location(&x,&y);
-			char str[45]={0};
-			snprintf(str, sizeof(str), "Latitude: %d.%07d, Longitude: %d.%07d\n",(int)x,(int)(x*10000000)%10000000,(int)y,(int)(y*10000000)%10000000);
-			for(int i = 0; i<44; i++){
+			char str[27]={0};
+			snprintf(str, sizeof(str), "x;%d.%07d\ny;%d.%07d\n",(int)x,(int)(x*10000000)%10000000,(int)y,(int)(y*10000000)%10000000);
+			for(int i = 0; i<26; i++){
 				MCAL_USART_SendData(USART1, &str[i], enabled);
 			}
 		}
@@ -42,35 +42,25 @@ void UltraSonic_Triggering ()
 	}
 }
 
+uint16_t CCR_value = 0;
+
 void BlindSpot_and_AEB ()
 {
 	while(1)
 	{
 		/* ============= Emergency Braking ==========*/
-		static uint8_t front_flag ;
-		static uint8_t left_flag ;
 
 		if(distance1 <= 25)
 		{
-			if(moving_Forward == 1) Stop();
-			Built_Led(0);
-
-			//Uart1_send("crash Front");
-			char str[7]={0};
-			snprintf(str, sizeof(str), "Front\n");
-
-			if(front_flag == 0){
-
-				front_flag = 1;
-
-				for(int i = 0; i<6; i++){
-					MCAL_USART_SendData(USART1, &str[i], enabled);
-				}
+			if(moving_Forward == 1){
+				Stop();
+				CCR_value = 0;
 			}
+			Built_Led(0);
+			//Uart1_send("crash Front");
 		}
 		else{
 			Built_Led(1);
-			front_flag = 0;
 		}
 		/*===========================================*/
 
@@ -82,7 +72,6 @@ void BlindSpot_and_AEB ()
 			Green_Led(1);
 			Red_Led(0);
 			Yellow_Led(0);
-			left_flag = 0;
 		}
 		else if(distance3 >= 25 && distance3 < 50)
 		{
@@ -91,17 +80,6 @@ void BlindSpot_and_AEB ()
 			Red_Led(0);
 
 			//Uart1_send("Closer Left");
-			char str[6]={0};
-			snprintf(str, sizeof(str), "Left\n");
-
-			if(left_flag == 0){
-
-				left_flag = 1;
-
-				for(int i = 0; i<5; i++){
-					MCAL_USART_SendData(USART1, &str[i], enabled);
-				}
-			}
 
 		}
 		else if( distance3 < 25){
@@ -113,17 +91,6 @@ void BlindSpot_and_AEB ()
 			Yellow_Led(0);
 
 			//Uart1_send("Danger Left");
-			char str[6]={0};
-			snprintf(str, sizeof(str), "Left\n");
-
-			if(left_flag == 0){
-
-				left_flag = 1;
-
-				for(int i = 0; i<5; i++){
-					MCAL_USART_SendData(USART1, &str[i], enabled);
-				}
-			}
 		}
 		/* =========================================*/
 
@@ -136,12 +103,15 @@ void move(){
 
 	while(1){
 
-		uint16_t CCR_value = 0;
-
 		switch(data){
 
 		case 'w':
-			if(distance1 > 25) Forward();
+			if(distance1 > 25){
+				if(CCR_value < 65535 - 100 ) CCR_value += 50;
+				TIMER3->CCR[2] = CCR_value;
+				TIMER3->CCR[3] = CCR_value;
+				Forward();
+			}
 			break;
 
 		case 's':
@@ -158,6 +128,9 @@ void move(){
 
 		case '0':
 			Stop();
+			TIMER3->CCR[2] = 65535;
+			TIMER3->CCR[3] = 65535;
+			CCR_value = 0;
 			break;
 
 		case 'f':
@@ -172,6 +145,15 @@ void move(){
 			TIMER3->CCR[3] = 65535;
 			break;
 
+		}
+
+		char str[6]={0};
+		uint8_t percentage = (CCR_value * 100) / 65535;
+
+		if(percentage < 99){
+			snprintf(str, sizeof(str), "v;%d\n", percentage);
+			for(int i = 0; i<5; i++)
+				MCAL_USART_SendData(USART1, &str[i], enabled);
 		}
 	}
 
@@ -207,12 +189,12 @@ int main(void)
 	strcpy(Task2.TaskName ,"UltraSonic_Triggering");
 
 
-	Task3.stack_size = 256 ;
+	Task3.stack_size = 128 ;
 	Task3.p_TaskEntry = BlindSpot_and_AEB ;
 	Task3.priority = 1 ;
 	strcpy(Task3.TaskName ,"BlindSpot_and_AEB");
 
-	Task4.stack_size = 128 ;
+	Task4.stack_size = 280 ;
 	Task4.p_TaskEntry = move ;
 	Task4.priority = 3 ;
 	strcpy(Task4.TaskName ,"move");
