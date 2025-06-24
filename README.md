@@ -44,16 +44,27 @@ STM32/
 
 ## 🛠️ Technologies Used
 
-- STM32F103C6T6 (ARM Cortex-M3)
-- STM32CubeIDE (for development)
-- C programming
-- Custom RTOS (written from scratch)
-- UART communication
-- Ultrasonic sensor (HC-SR04)
-- PWM Motor Control
-- GPS Module (NEO-6M)
-- Bluetooth (HC-05)
+### Hardware
 
+* **Microcontroller:** STM32F103C6T6 (ARM Cortex-M3)
+
+* **Sensors:** Ultrasonic Sensors (HC-SR04)
+
+* **Communication Modules:** GPS Module (NEO-6M), Bluetooth Module Bluetooth (HC-05)
+
+* **Actuators:** DC Motors (controlled via PWM)
+
+### Software
+
+* **Development Environment:** STM32CubeIDE
+
+* **Programming Language:** C
+
+* **Operating System:** Custom Real-Time Operating System (RTOS) (written from scratch)
+
+* **Communication Protocols:** UART (for GPS, Bluetooth)
+
+* **Peripherals:** GPIO, TIM (Timers)
 ---
 
 ## 🚦 System Overview
@@ -61,7 +72,7 @@ STM32/
 ### 🧠 Task Scheduling
 
 - The RTOS supports:
-  - Task creation with defined stack size and priority
+  - Task creation with a defined stack size and priority
   - Task waiting (delay-based blocking)
   - Cooperative multitasking with PendSV-based context switching
 
