@@ -30,14 +30,40 @@ This repository contains the complete firmware developed for the STM32F103C6T6 m
 
 ```text
 STM32/
-├── RTOS/                # Custom RTOS kernel (scheduling, tasks, context switching)
-├── Drivers/             # MCAL drivers for USART, GPIO, PWM, etc.
-├── main.c               # Entry point, task registration, and application logic
-├── GPS.c / .h           # GPS transmission logic
-├── ACC.c / .h           # Adaptive Cruise Control logic
-├── BlindSpot&AEB.c / .h # AEB and blind spot algorithms
-└── ...
+├── RTOS/
+│   ├── Src/
+│   │   ├── CortexMx_OS_porting.c   # ARM-specific low-level context switching
+│   │   ├── Scheduler.c             # Task creation, states, and scheduling
+│   │   └── MY_RTOS_FIFO.c          # FIFO structure for managing ready tasks
+│   └── Inc/
+│       ├── CortexMx_OS_porting.h
+│       ├── Scheduler.h
+│       └── MY_RTOS_FIFO.h
+│
+├── Drivers/
+│   ├── ACC/
+│   │   ├── ACC.c                   # Adaptive Cruise Control implementation
+│   │   └── ACC.h
+│   ├── BlindSpot&AEB/
+│   │   ├── BlindSpot&AEB.c         # Blind spot detection & emergency braking
+│   │   └── BlindSpot&AEB.h
+│   ├── GPS/
+│   │   ├── GPS.c                   # GPS data transmission logic
+│   │   └── GPS.h
+│   ├── GPIO/
+│   │   ├── GPIO.c                  # GPIO pin configuration and control
+│   │   └── GPIO.h
+│   ├── RCC/
+│   │   ├── RCC.c                   # Reset and clock control
+│   │   └── RCC.h
+│   └── UART/
+│       ├── UART.c                  # UART configuration and data transmission
+│       └── UART.h
+│
+├── main.c                          # Main application: initializes hardware, creates and starts tasks
 ```
+
+
 
 
 ---
